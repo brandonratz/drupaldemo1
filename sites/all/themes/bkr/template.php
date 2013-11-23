@@ -14,16 +14,16 @@ if (theme_get_setting('clear_registry')) {
 }
 
 // Add Zen Tabs styles
-if (theme_get_setting('basic_tabs')) {
-  drupal_add_css( drupal_get_path('theme', 'basic') .'/css/tabs.css');
+if (theme_get_setting('bkr_tabs')) {
+  drupal_add_css( drupal_get_path('theme', 'bkr') .'/css/tabs.css');
 }
 
-function basic_preprocess_html(&$vars) {
+function bkr_preprocess_html(&$vars) {
   global $user;
 
   // Add role name classes (to allow css based show for admin/hidden from user)
   foreach ($user->roles as $role){
-    $vars['classes_array'][] = 'role-' . basic_id_safe($role);
+    $vars['classes_array'][] = 'role-' . bkr_id_safe($role);
   }
 
   // HTML Attributes
@@ -50,8 +50,8 @@ function basic_preprocess_html(&$vars) {
     $path = drupal_get_path_alias($_GET['q']);
     list($section, ) = explode('/', $path, 2);
     $vars['classes_array'][] = 'with-subnav';
-    $vars['classes_array'][] = basic_id_safe('page-'. $path);
-    $vars['classes_array'][] = basic_id_safe('section-'. $section);
+    $vars['classes_array'][] = bkr_id_safe('page-'. $path);
+    $vars['classes_array'][] = bkr_id_safe('section-'. $section);
 
     if (arg(0) == 'node') {
       if (arg(1) == 'add') {
@@ -78,23 +78,23 @@ function basic_preprocess_html(&$vars) {
   }
 
   // Add IE classes.
-  if (theme_get_setting('basic_ie_enabled')) {
-    $basic_ie_enabled_versions = theme_get_setting('basic_ie_enabled_versions');
-    if (in_array('ie8', $basic_ie_enabled_versions, TRUE)) {
+  if (theme_get_setting('bkr_ie_enabled')) {
+    $bkr_ie_enabled_versions = theme_get_setting('bkr_ie_enabled_versions');
+    if (in_array('ie8', $bkr_ie_enabled_versions, TRUE)) {
       drupal_add_css(path_to_theme() . '/css/ie8.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'IE 8', '!IE' => FALSE), 'preprocess' => FALSE));
       drupal_add_js(path_to_theme() . '/js/selectivizr-min.js');
     }
-    if (in_array('ie9', $basic_ie_enabled_versions, TRUE)) {
+    if (in_array('ie9', $bkr_ie_enabled_versions, TRUE)) {
       drupal_add_css(path_to_theme() . '/css/ie9.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'IE 9', '!IE' => FALSE), 'preprocess' => FALSE));
     }
-    if (in_array('ie10', $basic_ie_enabled_versions, TRUE)) {
+    if (in_array('ie10', $bkr_ie_enabled_versions, TRUE)) {
       drupal_add_css(path_to_theme() . '/css/ie10.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'IE 10', '!IE' => FALSE), 'preprocess' => FALSE));
     }
   }
 
 }
 
-function basic_preprocess_page(&$vars, $hook) {
+function bkr_preprocess_page(&$vars, $hook) {
   if (isset($vars['node_title'])) {
     $vars['title'] = $vars['node_title'];
   }
@@ -128,21 +128,21 @@ function basic_preprocess_page(&$vars, $hook) {
   }
 }
 
-function basic_preprocess_node(&$vars) {
+function bkr_preprocess_node(&$vars) {
   // Add a striping class.
   $vars['classes_array'][] = 'node-' . $vars['zebra'];
 
   // Add $unpublished variable.
   $vars['unpublished'] = (!$vars['status']) ? TRUE : FALSE;
 
-  // Merge first/last class (from basic_preprocess_page) into classes array of current node object.
+  // Merge first/last class (from bkr_preprocess_page) into classes array of current node object.
   $node = $vars['node'];
   if (!empty($node->classes_array)) {
     $vars['classes_array'] = array_merge($vars['classes_array'], $node->classes_array);
   }
 }
 
-function basic_preprocess_block(&$vars, $hook) {
+function bkr_preprocess_block(&$vars, $hook) {
   // Add a striping class.
   $vars['classes_array'][] = 'block-' . $vars['block_zebra'];
 
@@ -169,23 +169,23 @@ function basic_preprocess_block(&$vars, $hook) {
  * @return
  *   A string containing the breadcrumb output.
  */
-function basic_breadcrumb($variables) {
+function bkr_breadcrumb($variables) {
   $breadcrumb = $variables['breadcrumb'];
   // Determine if we are to display the breadcrumb.
-  $show_breadcrumb = theme_get_setting('basic_breadcrumb');
+  $show_breadcrumb = theme_get_setting('bkr_breadcrumb');
   if ($show_breadcrumb == 'yes' || $show_breadcrumb == 'admin' && arg(0) == 'admin') {
 
     // Optionally get rid of the homepage link.
-    $show_breadcrumb_home = theme_get_setting('basic_breadcrumb_home');
+    $show_breadcrumb_home = theme_get_setting('bkr_breadcrumb_home');
     if (!$show_breadcrumb_home) {
       array_shift($breadcrumb);
     }
 
     // Return the breadcrumb with separators.
     if (!empty($breadcrumb)) {
-      $breadcrumb_separator = theme_get_setting('basic_breadcrumb_separator');
+      $breadcrumb_separator = theme_get_setting('bkr_breadcrumb_separator');
       $trailing_separator = $title = '';
-      if (theme_get_setting('basic_breadcrumb_title')) {
+      if (theme_get_setting('bkr_breadcrumb_title')) {
         $item = menu_get_item();
         if (!empty($item['tab_parent'])) {
           // If we are on a non-default tab, use the tab's title.
@@ -198,7 +198,7 @@ function basic_breadcrumb($variables) {
           $trailing_separator = $breadcrumb_separator;
         }
       }
-      elseif (theme_get_setting('basic_breadcrumb_trailing')) {
+      elseif (theme_get_setting('bkr_breadcrumb_trailing')) {
         $trailing_separator = $breadcrumb_separator;
       }
 
@@ -228,7 +228,7 @@ function basic_breadcrumb($variables) {
  * @return
  *  The converted string
  */
-function basic_id_safe($string) {
+function bkr_id_safe($string) {
   // Replace with dashes anything that isn't A-Z, numbers, dashes, or underscores.
   $string = strtolower(preg_replace('/[^a-zA-Z0-9_-]+/', '-', $string));
   // If the first character is not a-z, add 'n' in front.
@@ -251,7 +251,7 @@ function basic_id_safe($string) {
  * @ingroup themeable
  *
  */
-function basic_menu_link(array $variables) {
+function bkr_menu_link(array $variables) {
   $element = $variables['element'];
   $sub_menu = '';
 
@@ -260,7 +260,7 @@ function basic_menu_link(array $variables) {
   }
   $output = l($element['#title'], $element['#href'], $element['#localized_options']);
   // Adding a class depending on the TITLE of the link (not constant)
-  $element['#attributes']['class'][] = basic_id_safe($element['#title']);
+  $element['#attributes']['class'][] = bkr_id_safe($element['#title']);
   // Adding a class depending on the ID of the link (constant)
   if (isset($element['#original_link']['mlid']) && !empty($element['#original_link']['mlid'])) {
     $element['#attributes']['class'][] = 'mid-' . $element['#original_link']['mlid'];
@@ -271,7 +271,7 @@ function basic_menu_link(array $variables) {
 /**
  * Override or insert variables into theme_menu_local_task().
  */
-function basic_preprocess_menu_local_task(&$variables) {
+function bkr_preprocess_menu_local_task(&$variables) {
   $link =& $variables['element']['#link'];
 
   // If the link does not contain HTML already, check_plain() it now.
@@ -286,7 +286,7 @@ function basic_preprocess_menu_local_task(&$variables) {
 /**
  * Duplicate of theme_menu_local_tasks() but adds clearfix to tabs.
  */
-function basic_menu_local_tasks(&$variables) {
+function bkr_menu_local_tasks(&$variables) {
   $output = '';
 
   if (!empty($variables['primary'])) {
